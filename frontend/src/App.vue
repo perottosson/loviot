@@ -62,6 +62,7 @@ export default {
     return {
       newInc: 0,
       inc: 0,
+      loopValue: false,
       // vue slide bar
       sliderValue: 0,
       options: {
@@ -71,7 +72,7 @@ export default {
             if (val % 10 === 0 && val < 100 && val > 0) {
               if (this.selected == "SDS011Selection") {
                 return {
-                  label: `${this.timestampList[0][val]
+                  label: `${this.timestampList[1][val]
                     .replace("T", " ")
                     .replace(".000", "")
                     .slice(0, -4)}`
@@ -340,13 +341,13 @@ export default {
     getTimeStamp(val) {
       this.timestampList = JSON.parse(JSON.stringify(val));
       if (this.selected == "airqualityObservedSelection") {
-        this.lastTimestamp = this.timestampList[0][99];
+        this.lastTimestamp = this.timestampList[0][99].slice(0, -4);
       } else if (this.selected == "NO2B43FSelection") {
-        this.lastTimestamp = this.timestampList[1][99];
+        this.lastTimestamp = this.timestampList[1][99].replace(" ", "T");
       } else if (this.selected == "SDS011Selection") {
-        this.lastTimestamp = this.timestampList[2][99];
+        this.lastTimestamp = this.timestampList[2][99].slice(0, -4);
       }
-
+      console.log("LASTTIMESTAMP", this.lastTimestamp)
     },
     getTimeValue(val, loop) {
       // dont use the first value in the array in luftdaten since
@@ -357,18 +358,17 @@ export default {
         this.displayTime = val[0];
       }
 
+      this.loopValue = loop;
+
       // check if you are at the end of the array jump forward in time
       // to lastTimestamp. Make a new request with new timelimit
-      if(loop === true) {
+      if (loop === true) {
         // set speed of dot to 0
         this.options.duration = 0;
-
-        this.jumpForward(this.lastTimestamp)
+        this.jumpForward(this.lastTimestamp);
       } else {
         this.options.duration = 0.5;
-
       }
-        
     },
 
     playButton() {
@@ -391,24 +391,34 @@ export default {
     },
     // from datedropdown
     changeTime(selectedDates) {
-      this.fromDate = this.timeFormatter(selectedDates[0]);
-      this.updateSensorvalues(this.selected);
+      // dont run if loop is true
+      if (!this.loopValue) {
+        this.fromDate = this.timeFormatter(selectedDates[0]);
+        this.updateSensorvalues(this.selected);
+      }
     },
     // from sensordropdown
     entity(e) {
       this.selected = e.target.value.split(",");
+      // remove quotes and turn it to string
+      this.selected = JSON.stringify(this.selected[0]).replace(/["']/g, "")
+      console.log(JSON.stringify(this.selected[0]).replace(/["']/g, ""), this.selected, e)
       this.updateSensorvalues(this.selected);
     },
     // from reaching the end of timeline and jump forward with new request
     jumpForward(e) {
+              console.log("fdsfdssd", this.selected);
+
       // check if reached the maxDate
-      if(e.slice(0, -13) <= this.config.maxDate) {
+      if (e.slice(0, -13) <= this.config.maxDate) {
         this.fromDate = e;
       } else {
         this.fromDate = this.config.minDate;
       }
+      console.log("FROMDATE ", this.fromDate)
       // set the datepicker date correct after update
       this.initDate = this.fromDate;
+      
       this.updateSensorvalues(this.selected);
     },
 
@@ -419,10 +429,12 @@ export default {
       if (selection == "airqualityObservedSelection") {
         this.sensorData = this.dataAirqualityObserved;
         this.$set(this.sensorData, 7, { fromDate: this.fromDate });
+        console.log("air");
       }
       if (selection == "NO2B43FSelection") {
         this.sensorData = this.dataNO2B43F;
         this.$set(this.sensorData, 7, { fromDate: this.fromDate });
+        console.log("no2");
       }
       if (selection == "SDS011Selection") {
         this.sensorData = this.dataSDS011;

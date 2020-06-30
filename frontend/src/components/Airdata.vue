@@ -313,7 +313,8 @@ export default {
             });
             this.timestamp.forEach(el => {
               this.updatedTimeVal.push(
-                el[this.inc].replace("T", " ").replace(".000", "")
+                // el[this.inc].replace("T", " ").replace(".000", "")
+                el[this.inc]
               );
             });
             this.longitude.forEach(el => {
@@ -349,7 +350,8 @@ export default {
             });
             this.timestamp.forEach(el => {
               this.updatedTimeVal.push(
-                el[this.inc].replace("T", " ").replace(".000", "")
+                // el[this.inc].replace("T", " ").replace(".000", "")
+                el[this.inc]
               );
             });
             this.longitude.forEach(el => {
