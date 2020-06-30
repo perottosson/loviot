@@ -89,7 +89,7 @@ export default {
       next: 0,
       prev: 0,
       encoderVal: 0,
-
+      forward: false,
       // gameLoop
       limit: 100,
       now: 0,
@@ -277,7 +277,8 @@ export default {
       requestAnimationFrame(this.loop);
       // step forward
       this.inc = this.inc + this.nextVal;
-      console.log("encoderVal", this.encoderVal);
+
+      // KOLLA OM JAG KAN 
       // step backward
       this.inc = this.inc - this.prevVal;
 
@@ -295,7 +296,13 @@ export default {
         this.updatedLatVal.splice(0);
         this.updatedLonVal.splice(0);
 
+        // set update and forward time to false
+        this.forward = false
+        
+        // repeat if reaches the limit
         if (this.inc >= this.limit) {
+          // set update and forward time to true
+          this.forward = true
           this.inc = 0;
         }
 
@@ -356,10 +363,9 @@ export default {
           }
         }
         // this.inc = this.inc -
+
         this.inc += this.incAmount;
         this.sendToMap();
-
-        console.log("FDSAFDF", this.encoderVal, this.inc);
       }
       this.inc += Math.floor(this.encoderVal);
 
@@ -389,7 +395,7 @@ export default {
       this.$emit("changeIncVal", val);
     },
     updatedTimeVal(val) {
-      this.$emit("changeTimeVal", val);
+      this.$emit("changeTimeVal", val, this.forward);
     },
     sensorData: {
       deep: true,

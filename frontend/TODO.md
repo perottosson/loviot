@@ -1,3 +1,6 @@
+- LÄGG ÄVEN TILL NÄSTA MÅNAD KNAPPAR 
+- Fixa även en jumpBackward funktion
+
 - nicer graphics
 - skapa ytterligare ett lager utifrån materialet från miljöförvaltningen
 - skapa nytt lager med trafiken.nu

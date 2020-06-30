@@ -115,6 +115,7 @@ export default {
         maxRange: void 0,
         order: true,
         marks: [10, 20, 30, 40, 50],
+        lastTimestamp: "",
         // dotOptions: void 0,
         dotOptions: {
           style: {
@@ -133,7 +134,7 @@ export default {
         // stepActiveStyle: void 0,
         // labelStyle: void 0,
         // labelActiveStyle: void 0,
-        
+
         dotStyle: {
           backgroundColor: "black"
         },
@@ -338,8 +339,16 @@ export default {
     },
     getTimeStamp(val) {
       this.timestampList = JSON.parse(JSON.stringify(val));
+      if (this.selected == "airqualityObservedSelection") {
+        this.lastTimestamp = this.timestampList[0][99];
+      } else if (this.selected == "NO2B43FSelection") {
+        this.lastTimestamp = this.timestampList[1][99];
+      } else if (this.selected == "SDS011Selection") {
+        this.lastTimestamp = this.timestampList[2][99];
+      }
+
     },
-    getTimeValue(val) {
+    getTimeValue(val, loop) {
       // dont use the first value in the array in luftdaten since
       // it is not correct date
       if (this.selected == "SDS011Selection") {
@@ -347,6 +356,19 @@ export default {
       } else {
         this.displayTime = val[0];
       }
+
+      // check if you are at the end of the array jump forward in time
+      // to lastTimestamp. Make a new request with new timelimit
+      if(loop === true) {
+        // set speed of dot to 0
+        this.options.duration = 0;
+
+        this.jumpForward(this.lastTimestamp)
+      } else {
+        this.options.duration = 0.5;
+
+      }
+        
     },
 
     playButton() {
@@ -367,13 +389,26 @@ export default {
         this.next = true;
       }
     },
-
+    // from datedropdown
     changeTime(selectedDates) {
       this.fromDate = this.timeFormatter(selectedDates[0]);
       this.updateSensorvalues(this.selected);
     },
+    // from sensordropdown
     entity(e) {
       this.selected = e.target.value.split(",");
+      this.updateSensorvalues(this.selected);
+    },
+    // from reaching the end of timeline and jump forward with new request
+    jumpForward(e) {
+      // check if reached the maxDate
+      if(e.slice(0, -13) <= this.config.maxDate) {
+        this.fromDate = e;
+      } else {
+        this.fromDate = this.config.minDate;
+      }
+      // set the datepicker date correct after update
+      this.initDate = this.fromDate;
       this.updateSensorvalues(this.selected);
     },
 
