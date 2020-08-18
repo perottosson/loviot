@@ -1,13 +1,14 @@
-- LÄGG ÄVEN TILL NÄSTA MÅNAD KNAPPAR 
-- Fixa även en jumpBackward funktion
+V Fixa även en jumpBackward funktion, svårtillämpat pga API call
+V - ändra mappningen av färgerna för PM2.5
+V - lägga till en knapp där man kan få upp info om sensorn
+V - lägg till en debug knapp för utveckling som sätter av och på att man ser sensorvärdena
+V - lägga timelinen i en list längst ner och kartan i fullscreen och ta bort scrollbar
+- lägg till knappar
 
 - nicer graphics
 - skapa ytterligare ett lager utifrån materialet från miljöförvaltningen
 - skapa nytt lager med trafiken.nu
-- mappa sliderna till arduino
-- ändra mappningen av färgerna för PM2.5
-- lägga till en hover på varje punkt där det går att få upp info om sensorn
-- lägga timelinen i en list längst ner och kartan i fullscreen
+V mappa sliderna till arduino
 
 EXTRA:
 - plotta värdena över tid när du klickar

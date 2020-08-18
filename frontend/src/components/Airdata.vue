@@ -1,34 +1,42 @@
+
 <template>
   <div>
     <div>
       <br />
     </div>
-    <div v-if="wait">
-      <div v-for="(sensors, sensorindex) in sensorValue" :key="sensors.sensor">
-        <span v-if="airdata[2][sensorindex] !=null">
-          <b>Sensor{{sensorindex+1}}:</b>
-          {{ airdata[0] }}
-          <span v-for="sensorData in airdata.length-1" :key="sensorData">
-            <span id="col2">
-              <b>{{title[sensorData-1]}}</b>
-              {{ airdata[sensorData][sensorindex] }}
+    <div id="sensor-container">
+      <div v-if="wait">
+        <div v-if="debugToggle">
+          <div v-for="(sensors, sensorindex) in sensorValue" :key="sensors.sensor">
+            <span v-if="airdata[2][sensorindex] !=null">
+              <b>Sensor{{sensorindex+1}}:</b>
+              {{ airdata[0] }}
+              <span
+                v-for="sensorData in airdata.length-1"
+                :key="sensorData"
+              >
+                <span id="col_value">
+                <b>{{title[sensorData-1]}}</b>
+                {{ airdata[sensorData][sensorindex] }}
+              </span>
             </span>
-          </span>
-        </span>
+            </span>
 
-        <span v-if="airdata[2][sensorindex] ==null">
-          <span id="col1">
-            <b>Sensor{{sensorindex+1}}:</b>
-            {{ airdata[0] }}
-            <span
-              v-for="sensorData in airdata.length-1"
-              :key="sensorData"
-            >
-              <b>{{title[sensorData-1]}}</b>
-              {{ airdata[sensorData][sensorindex] }}
+            <span v-if="airdata[2][sensorindex] ==null">
+              <span id="col_no_value">
+              <b>Sensor{{sensorindex+1}}:</b>
+              {{ airdata[0] }}
+              <span
+                v-for="sensorData in airdata.length-1"
+                :key="sensorData"
+              >
+                <b>{{title[sensorData-1]}}</b>
+                {{ airdata[sensorData][sensorindex] }}
+              </span>
             </span>
-          </span>
-        </span>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
     <br />
@@ -46,23 +54,26 @@ export default {
   name: "Airdata",
   props: {
     sensorData: {
-      type: Array
+      type: Array,
     },
     playToggle: {
-      type: Boolean
+      type: Boolean,
+    },
+    debugToggle: {
+      type: Boolean,
     },
     nextVal: {
-      type: Boolean
+      type: Boolean,
     },
     prevVal: {
-      type: Boolean
+      type: Boolean,
     },
     newInc: {
-      type: Number
-    }
+      type: Number,
+    },
   },
 
-  data: function() {
+  data: function () {
     return {
       sensorType: "",
       fromDate: "",
@@ -81,6 +92,7 @@ export default {
       updatedTimeVal: [],
       updatedLonVal: [],
       updatedLatVal: [],
+      backwardTimeVal: "",
       sensors: [],
       updatedSensors: [],
       title: ["time: ", "value: ", "lat: ", "lon: "],
@@ -90,6 +102,8 @@ export default {
       prev: 0,
       encoderVal: 0,
       forward: false,
+      backward: false,
+
       // gameLoop
       limit: 100,
       now: 0,
@@ -102,13 +116,13 @@ export default {
         "Fiware-service": "loviot",
         "Fiware-servicepath": "/air/gbg",
         "X-Auth-Token": "c44c7dc0a5e625b5b5ae002ee600bd9d8af1346c",
-        "X-Requested-With": "XMLHttpRequest"
-      }
+        "X-Requested-With": "XMLHttpRequest",
+      },
     };
   },
 
   created() {
-    socket.on("encoder", val => {
+    socket.on("encoder", (val) => {
       this.encoderVal = val;
     });
   },
@@ -125,7 +139,7 @@ export default {
       const orionUrl = "http://62.88.149.35:8068/v2/entities/";
 
       // set sensorurls
-      entity[0].forEach(el => {
+      entity[0].forEach((el) => {
         this.sensors.push(el);
       });
       // set sensor
@@ -136,7 +150,7 @@ export default {
         "Fiware-service": "loviot",
         "Fiware-servicepath": entity[5].servicePath,
         "X-Auth-Token": "c44c7dc0a5e625b5b5ae002ee600bd9d8af1346c",
-        "X-Requested-With": "XMLHttpRequest"
+        "X-Requested-With": "XMLHttpRequest",
       };
 
       // set correct sensvalue, lat and long
@@ -147,7 +161,7 @@ export default {
 
       let promises = [];
 
-      this.sensors.forEach(e => {
+      this.sensors.forEach((e) => {
         promises.push(
           axios
             .get(
@@ -160,7 +174,7 @@ export default {
                 this.limit,
               { headers: this.headers }
             )
-            .catch(err => {
+            .catch((err) => {
               console.log(
                 "noddata",
                 err,
@@ -192,7 +206,7 @@ export default {
 
             // check what sensor
             if (this.sensorType == "AirqualityObserved") {
-              this.updatedSensors.forEach(el => {
+              this.updatedSensors.forEach((el) => {
                 try {
                   this.sensorValue.push(
                     el.data.data.attributes[this.sensVal].values
@@ -215,7 +229,7 @@ export default {
                 this.sensVal
               ].attrName;
             } else if (this.sensorType == "NO2B43F") {
-              this.updatedSensors.forEach(el => {
+              this.updatedSensors.forEach((el) => {
                 try {
                   this.sensorValue.push(
                     el.data.data.attributes[this.sensVal].values
@@ -240,7 +254,7 @@ export default {
                 this.sensVal
               ].attrName;
             } else if (this.sensorType == "SDS011") {
-              this.updatedSensors.forEach(el => {
+              this.updatedSensors.forEach((el) => {
                 try {
                   this.sensorValue.push(
                     el.data.data.attributes[this.sensVal].values
@@ -268,20 +282,23 @@ export default {
             }
           })
         )
-        .catch(errors => {
+        .catch((errors) => {
           console.log("ERROR_airdata.vue", errors);
         });
     },
 
+
+
+    stepforward() {
+      this.inc += 1;
+    },
+
+    stepbackward() {
+      if (this.inc > 0) this.inc -= 1;
+    },
+
     loop() {
       requestAnimationFrame(this.loop);
-      // step forward
-      this.inc = this.inc + this.nextVal;
-
-      // KOLLA OM JAG KAN 
-      // step backward
-      this.inc = this.inc - this.prevVal;
-
       this.now = Date.now();
       this.delta = this.now - this.then;
 
@@ -296,31 +313,21 @@ export default {
         this.updatedLatVal.splice(0);
         this.updatedLonVal.splice(0);
 
-        // set update and forward time to false
-        this.forward = false
-        
-        // repeat if reaches the limit
-        if (this.inc >= this.limit) {
-          // set update and forward time to true
-          this.forward = true
-          this.inc = 0;
-        }
-
         if (this.sensorType == "AirqualityObserved") {
           try {
-            this.sensorValue.forEach(el => {
+            this.sensorValue.forEach((el) => {
               this.updatedSensorVal.push(el[this.inc]);
             });
-            this.timestamp.forEach(el => {
+            this.timestamp.forEach((el) => {
               this.updatedTimeVal.push(
                 // el[this.inc].replace("T", " ").replace(".000", "")
                 el[this.inc]
               );
             });
-            this.longitude.forEach(el => {
+            this.longitude.forEach((el) => {
               this.updatedLonVal.push(el[this.inc].coordinates[1]);
             });
-            this.latitude.forEach(el => {
+            this.latitude.forEach((el) => {
               this.updatedLatVal.push(el[this.inc].coordinates[0]);
             });
           } catch (err) {
@@ -328,16 +335,16 @@ export default {
           }
         } else if (this.sensorType == "NO2B43F") {
           try {
-            this.sensorValue.forEach(el => {
+            this.sensorValue.forEach((el) => {
               this.updatedSensorVal.push(el[this.inc]);
             });
-            this.timestamp.forEach(el => {
+            this.timestamp.forEach((el) => {
               this.updatedTimeVal.push(el[this.inc]);
             });
-            this.longitude.forEach(el => {
+            this.longitude.forEach((el) => {
               this.updatedLonVal.push(el[this.inc]);
             });
-            this.latitude.forEach(el => {
+            this.latitude.forEach((el) => {
               this.updatedLatVal.push(el[this.inc]);
             });
           } catch (err) {
@@ -345,19 +352,19 @@ export default {
           }
         } else if (this.sensorType == "SDS011") {
           try {
-            this.sensorValue.forEach(el => {
+            this.sensorValue.forEach((el) => {
               this.updatedSensorVal.push(el[this.inc]);
             });
-            this.timestamp.forEach(el => {
+            this.timestamp.forEach((el) => {
               this.updatedTimeVal.push(
                 // el[this.inc].replace("T", " ").replace(".000", "")
                 el[this.inc]
               );
             });
-            this.longitude.forEach(el => {
+            this.longitude.forEach((el) => {
               this.updatedLonVal.push(el[this.inc]);
             });
-            this.latitude.forEach(el => {
+            this.latitude.forEach((el) => {
               this.updatedLatVal.push(el[this.inc]);
             });
           } catch (err) {
@@ -371,8 +378,17 @@ export default {
       }
       this.inc += Math.floor(this.encoderVal);
 
-      if(this.inc < 0 ) this.inc = 100
-      if(this.inc > 100) this.inc = 100
+      // set update and forward time to false
+      this.forward = false;
+
+      // console.log("INC", this.inc);
+      if (this.inc < 0) {
+        this.inc = 0;
+      }
+      if (this.inc > this.limit) {
+        this.forward = true;
+        this.inc = this.limit;
+      }
     },
 
     sendToMap() {
@@ -382,11 +398,11 @@ export default {
         this.updatedSensorVal,
         this.updatedLatVal,
         this.updatedLonVal,
-        this.wait
+        this.wait,
       ];
 
       eventBus.$emit("passAirdata", this.airdata);
-    }
+    },
   },
 
   watch: {
@@ -397,8 +413,10 @@ export default {
       this.$emit("changeIncVal", val);
     },
     updatedTimeVal(val) {
+      //console.log("UPDATEIMTEVAL BACK", this.backward)
       this.$emit("changeTimeVal", val, this.forward);
     },
+
     sensorData: {
       deep: true,
       immediate: true,
@@ -412,7 +430,7 @@ export default {
         } catch (err) {
           console.log("no data yet ...");
         }
-      }
+      },
     },
     newInc: {
       deep: true,
@@ -423,17 +441,21 @@ export default {
         } catch (err) {
           console.log("no data yet ...");
         }
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 
 <style scoped>
-#col1 {
+#sensor-container {
+  z-index: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+#col_no_value {
   color: brown;
 }
-#col2 {
+#col_value {
   color: black;
 }
 </style>

@@ -6,7 +6,7 @@
 
 #include <Encoder.h>
 
-Encoder myEnc(2, 3);
+Encoder encoder(2, 3);
 
 void setup() {
   Serial.begin(9600);
@@ -16,15 +16,15 @@ void setup() {
 long oldPosition  = -999;
 
 void loop() {
-  long newPosition = myEnc.read();
+  long newPosition = encoder.read();
+
   if (newPosition != oldPosition) {
-    //oldPosition = map(newPosition, 1, 100, 0, 10);
     oldPosition = newPosition;
     //Serial.println(newPosition);
     Serial.println(map(newPosition, 1, 10000, 0, 10));
   } else {
     // reset when no movement
-    myEnc.write(0);
+    encoder.write(0);
     //Serial.println(newPosition);
     Serial.println(map(newPosition, 1, 10000, 0, 10));
   }

@@ -15,7 +15,6 @@ io.sockets.on('connection', (socket) => {
   parser.on('data', data => {
     let remaped = data / 1;
     socket.emit("encoder", remaped);
-    // console.log("Encoderval", remaped)
   });
 });
 
