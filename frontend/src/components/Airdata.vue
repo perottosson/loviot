@@ -191,7 +191,14 @@ export default {
               );
             })
         );
-      });
+      console.log(corsUrlPrefix +
+                orionUrl +
+                e.sensorUrl +
+                "?fromDate=" +
+                entity[7].fromDate +
+                "&limit=" +
+                this.limit,
+              { headers: this.headers })});
       axios
         .all(promises)
         .then(

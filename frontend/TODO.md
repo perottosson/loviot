@@ -6,8 +6,8 @@ V - lägga timelinen i en list längst ner och kartan i fullscreen och ta bort s
 - lägg till knappar
 
 - nicer graphics
-- skapa ytterligare ett lager utifrån materialet från miljöförvaltningen
-- skapa nytt lager med trafiken.nu
+V - skapa ytterligare ett lager utifrån materialet från miljöförvaltningen. DET ÄR FRÅN 2015 OCH INTE REALTIDSDATA
+- skapa nytt lager med trafiken.nu. FRÅGAT TRAFIKVERKET VAD SOM FINNS TILLGÄNGLIGT
 V mappa sliderna till arduino
 
 EXTRA:

@@ -192,7 +192,7 @@ export default {
         wrap: true,
         altFormat: "Y-m-d H:i",
         minDate: "2019-11-01",
-        maxDate: "2020-06-15",
+        maxDate: "2020-08-25",
         altInput: true,
         minuteIncrement: 60,
         dateFormat: "Y-m-d",
