@@ -2,6 +2,7 @@
 node_modules
 /dist
 backendEletronTest
+dist_electron
 
 # local env files
 .env.local
