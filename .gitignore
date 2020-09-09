@@ -1,8 +1,10 @@
 .DS_Store
 node_modules
 /dist
+dist
 backendEletronTest
 dist_electron
+frontend20200909
 
 # local env files
 .env.local
